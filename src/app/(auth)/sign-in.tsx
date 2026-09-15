@@ -7,7 +7,7 @@ import { Spacing } from '@/constants/theme';
 import { t } from '@/i18n/zh-TW';
 
 export default function SignInScreen() {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithGoogle, configured } = useAuth();
   const [mode, setMode] = useState<'in' | 'up'>('in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,6 +32,20 @@ export default function SignInScreen() {
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : t.auth.error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const signInGoogle = async () => {
+    setBusy(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      if (e instanceof Error && e.message === 'cancelled') setError(t.auth.googleCancelled);
+      else setError(e instanceof Error ? e.message : t.errors.googleSignIn);
     } finally {
       setBusy(false);
     }
@@ -88,6 +102,14 @@ export default function SignInScreen() {
               setError(null);
             }}
           />
+          {configured ? (
+            <>
+              <AppText variant="caption" color="textSecondary" style={{ textAlign: 'center' }}>
+                {t.auth.orDivider}
+              </AppText>
+              <Button label={t.auth.signInWithGoogle} variant="secondary" onPress={signInGoogle} loading={busy} />
+            </>
+          ) : null}
         </Card>
       </View>
     </Screen>

@@ -1,6 +1,6 @@
 # 畫素微量烘焙咖啡 · Pixel Cafe' Nano-Rostery (coffeeroast)
 
-**線上 POC**：https://musicallanding-code.github.io/coffeeroast/（推到 `main` 會自動重新部署，見
+**線上 POC**：https://leoleehr.github.io/coffeeroast/（推到 `main` 會自動重新部署，見
 `.github/workflows/deploy-web.yml`）。未設定 Supabase 時會自動使用 `src/demo/` 的示範資料，方便直接
 檢視整個 UI/UX；新增/編輯只在當次瀏覽中生效，重新整理會重置。
 
@@ -37,6 +37,33 @@ npm start                         # 掃 QR code 用 iPhone 的 Expo Go 開啟
 3. Authentication → Providers 開啟 Email（開發時可關閉 email 驗證以加速）。
 4. 把 Project URL 與 anon key 填入 `.env.local`。
 
+## Google 登入 + Google Drive 備份設定
+
+登入頁的「使用 Google 登入」與設定頁的「Google 雲端硬碟備份」需要先完成以下設定
+（需求：Supabase 專案已建立）。登入走 Supabase 的 Google provider，Drive 備份用
+登入時取得的 Google `provider_token` 直接呼叫 Drive REST API，把每筆烘焙存成 JSON
+放進使用者 Drive 根目錄的資料夾「畫素微量烘焙咖啡」（`drive.file` scope，只能存取
+App 自己建立的檔案，不需 Google 敏感範圍審查）。
+
+1. **Google Cloud Console**（<https://console.cloud.google.com>）
+   - 建立專案 → 「API 和服務」→「OAuth 同意畫面」：User Type 選 **External**，
+     範圍加入 `openid`、`.../auth/userinfo.email`、`.../auth/userinfo.profile`、
+     `https://www.googleapis.com/auth/drive.file`；在「測試使用者」加入自己的 Google 帳號。
+   - 「憑證」→「建立憑證」→「OAuth 用戶端 ID」→ 應用程式類型 **網頁應用程式**：
+     - 已授權的重新導向 URI：`https://<PROJECT-REF>.supabase.co/auth/v1/callback`
+     - 已授權的 JavaScript 來源：`http://localhost:8081`、
+       `https://leoleehr.github.io`
+   - 記下 Client ID 與 Client Secret。
+2. **Supabase Dashboard**
+   - Authentication → Providers → Google：啟用，填入上面的 Client ID / Client Secret。
+   - Authentication → URL Configuration → Redirect URLs 加入：
+     `http://localhost:8081/**`、
+     `https://leoleehr.github.io/coffeeroast/**`、
+     `coffeeroast://**`、`exp://**`（Expo Go 用）。
+3. 不需在 `.env.local` 加任何東西 —— Client Secret 只放在 Supabase 後端。
+4. Google 授權的 access token 約 1 小時到期，Supabase 不會自動續期；到期後
+   在設定頁按「重新連結 Google」即可。烘焙一定會先存進 Supabase，備份失敗不影響資料。
+
 ## 專案結構
 
 ```
@@ -65,6 +92,9 @@ src/
 - **階段 2（完成）**：供應商、生豆進貨批次、烘焙時扣生豆庫存、熟豆庫存與出入庫、拼配配方
 - **階段 3（完成）**：感測器抽象層（模擬 / Web Serial / BLE）+ 設定頁選擇與配對、
   雙曲線比較（烘焙記錄頁 → 比較鈕）、烘焙記錄匯出 CSV / PNG
+- **Google 登入 + Drive 備份（完成）**：「使用 Google 登入」（走 Supabase Google
+  provider）、烘焙儲存時自動把該筆 JSON 備份到使用者 Google Drive、設定頁可手動
+  「立即備份 / 全部重新備份」。設定見上方〈Google 登入 + Google Drive 備份設定〉。
 
 ### 藍牙 dev build
 

@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { getValidAccessToken } from '@/auth/googleLink';
 import { demo, isDemoMode } from '@/demo/demoStore';
+import { upsertRoastJson } from '@/lib/googleDrive';
 import { qk } from '@/lib/queryClient';
+import { setBackupEntry } from '@/lib/roastBackup';
 import { supabase } from '@/lib/supabase';
 
 import {
@@ -163,6 +166,23 @@ export function useSaveRoast() {
           .then(({ error }) => {
             if (error) console.warn('roasted_stock_moves insert failed', error.message);
           });
+      }
+
+      // Google Drive backup (best effort — never let a backup failure lose the
+      // roast). Silently skipped when Google isn't linked or the token expired;
+      // the user can re-run it from Settings.
+      try {
+        const token = await getValidAccessToken();
+        if (token) {
+          const { fileId } = await upsertRoastJson(token, {
+            batch: batch as RoastBatchRow,
+            curvePoints: payload.points,
+            events: payload.events,
+          });
+          await setBackupEntry(batch.id, { fileId, syncedAt: Date.now() });
+        }
+      } catch (e) {
+        console.warn('gdrive backup failed', e instanceof Error ? e.message : e);
       }
 
       return batch;

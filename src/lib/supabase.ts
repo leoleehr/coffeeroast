@@ -22,6 +22,9 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: Platform.OS === 'web',
+      // PKCE so the native OAuth flow can call exchangeCodeForSession(); the web
+      // flow (detectSessionInUrl) handles the ?code= param on its own.
+      flowType: 'pkce',
     },
   },
 );

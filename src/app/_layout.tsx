@@ -31,6 +31,8 @@ function RootNavigator() {
     SplashScreen.hideAsync();
     if (!configured) return;
     const inAuthGroup = segments[0] === '(auth)';
+    // The OAuth redirect target resolves its own navigation once the session lands.
+    if ((segments[0] as string) === 'auth') return;
     if (!session && !inAuthGroup) {
       router.replace('/(auth)/sign-in');
     } else if (session && inAuthGroup) {
@@ -50,6 +52,7 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(auth)" />
+      <Stack.Screen name="auth/callback" />
       <Stack.Screen name="roast" />
       <Stack.Screen name="suppliers" />
       <Stack.Screen name="blends" />

@@ -44,3 +44,6 @@ example
 
 # Claude Code runtime state (not project config)
 .claude/scheduled_tasks.lock
+
+# Supabase CLI local cache
+supabase/.temp/

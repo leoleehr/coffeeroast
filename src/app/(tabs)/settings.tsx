@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { useAuth } from '@/auth/AuthProvider';
 import { BrandHeader } from '@/components/BrandHeader';
+import { GoogleDriveSettings } from '@/components/GoogleDriveSettings';
 import { SensorSettings } from '@/components/SensorSettings';
 import { SetupNotice } from '@/components/SetupNotice';
 import { AppText, Button, Card, Row, Screen } from '@/components/ui/kit';
@@ -32,6 +33,8 @@ export default function SettingsScreen() {
           <AppText color="textSecondary">{t.demo.banner}</AppText>
         )}
       </Card>
+
+      {configured ? <GoogleDriveSettings /> : null}
 
       <AppText variant="label" color="textSecondary">
         {t.settings.sensor}

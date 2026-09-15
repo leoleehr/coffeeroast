@@ -35,6 +35,9 @@ export const t = {
     checkEmail: '請收信完成驗證後再登入。',
     signOut: '登出',
     error: '登入失敗，請確認帳號密碼。',
+    orDivider: '或',
+    signInWithGoogle: '使用 Google 登入',
+    googleCancelled: '已取消 Google 登入。',
   },
 
   tabs: {
@@ -234,6 +237,22 @@ export const t = {
     lastReading: '最新讀值',
     about: '關於',
     version: '版本',
+    googleDrive: 'Google 雲端硬碟備份',
+    googleDriveDesc:
+      '連結 Google 帳號後，每筆烘焙記錄會自動備份一份 JSON 到你的 Google Drive 資料夾「畫素微量烘焙咖啡」，你可以自行瀏覽與下載。',
+    googleConnect: '連結 Google Drive',
+    googleConnected: '已連結',
+    googleDisconnect: '解除連結',
+    googleReconnect: '重新連結 Google',
+    googleExpired: 'Google 授權已過期，請重新連結。',
+    backupNow: '立即備份最新一筆',
+    backupAll: '全部重新備份',
+    backupInProgress: '備份中…',
+    backupDone: '備份完成',
+    backupFailed: '備份失敗，請稍後再試。',
+    lastBackup: '上次備份',
+    neverBackedUp: '尚未備份',
+    nothingToBackUp: '沒有可備份的烘焙記錄。',
   },
 
   errors: {
@@ -241,6 +260,7 @@ export const t = {
     loadFailed: '載入失敗。',
     saveFailed: '儲存失敗。',
     missingSupabase: '尚未設定 Supabase。請填入 .env 的 EXPO_PUBLIC_SUPABASE_URL 與 EXPO_PUBLIC_SUPABASE_ANON_KEY。',
+    googleSignIn: 'Google 登入失敗，請再試一次。',
   },
 
   demo: {
