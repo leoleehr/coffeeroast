@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>畫素微量烘焙咖啡 — 專文介紹</title>
+<meta name="description" content="跨平台咖啡烘焙記錄 App 專文介紹，含即時介面截圖與技術架構說明">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+<style>
+  :root{
+    --bg:#17110d;
+    --surface:#221a14;
+    --surface-2:#2b2019;
+    --accent:#dd8a52;
+    --accent-strong:#f0a468;
+    --text:#f3ece3;
+    --text-muted:#a89484;
+    --border:#3a2c22;
+    --mono-chip:#e79a5e;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans TC','Noto Sans',sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:#1a1310}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 96px}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+  .hero{
+    padding:72px 0 48px;
+    border-bottom:1px solid var(--border);
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent-strong);
+    background:rgba(221,138,82,.12);
+    border:1px solid rgba(221,138,82,.3);
+    padding:5px 12px;border-radius:999px;
+    margin-bottom:22px;
+  }
+  h1{
+    font-family:'Noto Serif TC',serif;
+    font-weight:700;
+    font-size:clamp(32px,6vw,50px);
+    line-height:1.25;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .subtitle{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--text-muted);
+    font-size:15px;
+    letter-spacing:.03em;
+    margin:0 0 26px;
+  }
+  .dek{
+    font-size:18px;
+    color:var(--text);
+    max-width:60ch;
+    margin:0 0 30px;
+  }
+  .links{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--text);
+    text-decoration:none;
+    border:1px solid var(--border);
+    padding:10px 16px;
+    border-radius:8px;
+    background:var(--surface);
+    transition:border-color .15s,color .15s;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent-strong)}
+  .btn.primary{background:var(--accent);color:#1c1108;border-color:var(--accent);font-weight:600}
+  .btn.primary:hover{background:var(--accent-strong);color:#1c1108}
+
+  section{padding:56px 0}
+  section + section{border-top:1px solid var(--border)}
+  h2{
+    font-family:'Noto Serif TC',serif;
+    font-size:26px;
+    margin:0 0 18px;
+    display:flex;align-items:baseline;gap:12px;
+  }
+  h2 .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    color:var(--accent-strong);
+    font-weight:400;
+  }
+  p{margin:0 0 16px;color:var(--text)}
+  p.lede{font-size:16.5px}
+  .muted{color:var(--text-muted)}
+
+  .feature{margin-top:34px}
+  .feature h3{
+    font-family:'Noto Serif TC',serif;
+    font-size:19px;
+    margin:0 0 6px;
+    color:var(--text);
+  }
+  .feature .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--mono-chip);
+    text-transform:uppercase;
+    margin-bottom:8px;
+    display:block;
+  }
+  figure{margin:18px 0 0}
+  figure img{
+    width:100%;
+    display:block;
+    border-radius:10px;
+    border:1px solid var(--border);
+    box-shadow:0 24px 48px -24px rgba(0,0,0,.6);
+  }
+  figcaption{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:10px;
+    padding-left:2px;
+  }
+
+  .timeline{
+    list-style:none;margin:22px 0 0;padding:0;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:10px;
+  }
+  .timeline li{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .timeline .step{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:var(--accent-strong);
+    margin-bottom:4px;
+  }
+  .timeline .label{font-size:14px}
+
+  table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14.5px}
+  th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-muted);font-weight:500;
+  }
+  td.k{font-family:'IBM Plex Mono',monospace;color:var(--accent-strong);white-space:nowrap;padding-right:16px}
+
+  .roadmap{margin-top:20px;display:flex;flex-direction:column;gap:0}
+  .rm-item{
+    display:flex;gap:16px;padding:16px 0;
+    border-top:1px solid var(--border);
+  }
+  .rm-item:first-child{border-top:none}
+  .rm-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--accent-strong);
+    background:rgba(221,138,82,.12);
+    border:1px solid rgba(221,138,82,.3);
+    border-radius:6px;
+    padding:3px 8px;
+    height:fit-content;
+    white-space:nowrap;
+  }
+  .rm-body h4{margin:0 0 4px;font-size:15px;font-weight:600}
+  .rm-body p{margin:0;font-size:14px;color:var(--text-muted)}
+
+  blockquote{
+    margin:28px 0;padding:4px 0 4px 20px;
+    border-left:2px solid var(--accent);
+    font-family:'Noto Serif TC',serif;
+    font-size:18px;
+    color:var(--text);
+  }
+
+  footer{
+    padding:48px 0 0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#faf6f1;
+      --surface:#ffffff;
+      --surface-2:#f1e9e0;
+      --accent:#c9713d;
+      --accent-strong:#a85a2e;
+      --text:#241a12;
+      --text-muted:#7a695b;
+      --border:#e4d8c9;
+      --mono-chip:#a85a2e;
+    }
+  }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">◆ 產品專文 · Product Feature</span>
+    <h1>畫素微量烘焙咖啡</h1>
+    <p class="subtitle">Pixel Cafe' Nano-Rostery — 跨平台咖啡烘焙記錄 App</p>
+    <p class="dek">一支從 Windows FoxPro 老軟體 <span class="mono">cafe4</span> 重生的烘焙記錄工具：即時溫度曲線、事件標記、生豆與熟豆庫存，資料雲端同步到手機、平板與桌機。</p>
+    <div class="links">
+      <a class="btn primary" href="/coffeeroast/" target="_blank" rel="noopener">線上體驗 →</a>
+      <a class="btn" href="https://github.com/leoleehr/coffeeroast" target="_blank" rel="noopener">原始碼 GitHub</a>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="num">01</span> 為什麼重寫一支烘焙軟體</h2>
+    <p class="lede">舊版 <span class="mono">cafe4</span> 是一支跑在 Windows 上的 FoxPro 程式，多年來記錄著每一次烘豆的温度、時間與風味筆記——但它只能裝在一台電腦上，資料出不了那台機器。「畫素微量烘焙咖啡」把同一套烘焙記錄邏輯搬進手機與雲端：溫度曲線即時畫、生豆庫存自動扣、記錄在 iOS、Android、Windows 之間同步，烘豆的人不用再守著一台電腦。</p>
+    <p class="muted">產品沿用舊軟體的名字，作為對它的致敬，也標誌著這是同一件事的第三十年版本，不是全新發明。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> 一次烘焙的樣子</h2>
+    <p class="lede">核心畫面圍繞著烘豆本身真正發生的五個時刻：豆子入鍋回溫、脫水結束、一爆、二爆、下豆。這條時間軸不是介面裝飾，是烘豆師實際判斷風味走向的依據。</p>
+    <ul class="timeline">
+      <li><div class="step">01</div><div class="label">回溫點</div></li>
+      <li><div class="step">02</div><div class="label">脫水結束</div></li>
+      <li><div class="step">03</div><div class="label">一爆</div></li>
+      <li><div class="step">04</div><div class="label">二爆</div></li>
+      <li><div class="step">05</div><div class="label">下豆</div></li>
+    </ul>
+
+    <div class="feature">
+      <span class="tag">Home / 首頁</span>
+      <h3>總覽：本週在烘什麼</h3>
+      <p>打開 App 先看到總烘焙次數、生豆品項數，以及最近幾筆記錄的烘焙度、總時間與失重率——判斷「這批豆子表現如何」的三個最快指標。</p>
+      <figure>
+        <img src="images/home.jpg" alt="首頁畫面，顯示總烘焙次數、生豆品項與最近烘焙列表" loading="lazy">
+        <figcaption>首頁 — 總烘焙次數 7、生豆品項 6，列表顯示各批烘焙度與失重率</figcaption>
+      </figure>
+    </div>
+
+    <div class="feature">
+      <span class="tag">Live Roast / 即時烘焙</span>
+      <h3>烘焙進行中：豆溫、升溫率、火力風門同時看</h3>
+      <p>開始一鍋烘焙後，畫面同時追蹤經過時間、即時豆溫與升溫率（RoR），並把爐溫疊在同一張圖上。火力與風門用加減鈕現場調整，四個關鍵事件點用一個按鈕標記，事後回放時間軸上就會出現對應標記線。</p>
+      <figure>
+        <img src="images/live-roast.jpg" alt="即時烘焙畫面，顯示經過時間、豆溫、升溫率與溫度曲線圖" loading="lazy">
+        <figcaption>烘焙中 — 經過時間 0:34、豆溫 152.2°C、升溫率 -74.6°C/min，火力與風門即時可調</figcaption>
+      </figure>
+    </div>
+
+    <div class="feature">
+      <span class="tag">Roast Detail / 烘焙記錄</span>
+      <h3>烘焙結束後：一張圖看完整條曲線</h3>
+      <p>下豆之後，這鍋烘焙變成一筆完整記錄：溫度曲線疊上回溫點／脫水結束／一爆／下豆的標記線，發展比例（DTR）、失重率、生豆與熟豆重量自動算好，還能匯出 CSV 或圖片留存、比較。</p>
+      <figure>
+        <img src="images/roast-detail.jpg" alt="單筆烘焙記錄詳細頁，顯示完整溫度曲線與各項數據" loading="lazy">
+        <figcaption>烘焙記錄詳情 — 衣索比亞 耶加雪菲 孔加 水洗 G1，總時間 11:30，DTR 15%，失重率 15.0%</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> 豆子從哪來、去了哪裡</h2>
+    <p class="lede">烘焙記錄之外，是完整的生豆與熟豆庫存：從供應商進貨、烘焙時自動扣生豆庫存、熟豆出入庫，到拼配配方管理，對應舊版 cafe4 原本就有的批次管理需求。</p>
+
+    <div class="feature">
+      <span class="tag">Beans / 生豆型錄</span>
+      <h3>生豆型錄：產地、處理法、等級一目了然</h3>
+      <p>每支生豆記錄產區、莊園、處理法（水洗、日曬、去果皮日曬、濕剝⋯）與等級，中英對照顯示，方便對照供應商標示與國際評鑑資料。</p>
+      <figure>
+        <img src="images/beans.jpg" alt="生豆型錄列表，顯示各產區生豆與處理法標籤" loading="lazy">
+        <figcaption>生豆型錄 — 6 個品項，涵蓋衣索比亞、肯亞、哥倫比亞、瓜地馬拉、巴西、印尼</figcaption>
+      </figure>
+    </div>
+
+    <div class="feature">
+      <span class="tag">Inventory / 庫存</span>
+      <h3>庫存：生豆與熟豆分開算，低庫存會提醒</h3>
+      <p>生豆庫存依進貨批次計算剩餘公斤數，低於門檻會標示「低庫存」；熟豆庫存則依烘焙產出的公克數累計。供應商、拼配配方、熟豆異動記錄也都在這一頁。</p>
+      <figure>
+        <img src="images/inventory.jpg" alt="庫存頁面，顯示生豆庫存公斤數與熟豆庫存公克數" loading="lazy">
+        <figcaption>庫存 — 哥倫比亞 薇拉 聖阿德里安 日曬 僅剩 320g，已標示低庫存</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> 溫度從哪裡來：可插拔的感測器層</h2>
+    <p class="lede">這是整支 App 目前最重要的架構決定：所有溫度資料都經過同一個 <span class="mono">Sensor</span> 介面，實作可以隨時替換，UI 完全不用改。</p>
+    <blockquote>先讓軟體能用，再讓硬體接進來——而不是被一顆還沒買的溫度探針卡住開發進度。</blockquote>
+    <p>目前預設是 <span class="mono">MockSensor</span>：模擬訊號，任何環境都能跑，也是線上 POC 用來展示整個 UI 的方式。等實體探針就緒，設定頁可以切到 <span class="mono">WebSerialSensor</span>（桌機 Chrome/Edge 透過 USB 轉接器）或 <span class="mono">BleSensor</span>（藍牙，需要 Expo dev build），不需要更換任何畫面邏輯。</p>
+    <div class="feature">
+      <span class="tag">Settings / 設定</span>
+      <h3>設定頁：切換感測器類型</h3>
+      <figure>
+        <img src="images/settings.jpg" alt="設定畫面，顯示溫度感測器類型選擇：模擬訊號、藍牙、USB序列埠" loading="lazy">
+        <figcaption>設定 — 溫度感測器類型：模擬訊號 / 藍牙 (BLE) / USB 序列埠</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> 技術架構</h2>
+    <p class="lede">前端是 Expo（React Native）+ TypeScript，用同一套程式碼發 iOS、Android 與 Web／PWA；後端是 Supabase，每張表都有列級權限（RLS），資料只有登入的使用者自己看得到、改得到。</p>
+    <table>
+      <tr><th>層次</th><th>選擇</th></tr>
+      <tr><td class="k">框架</td><td>Expo (React Native) · TypeScript · expo-router（型別化路由）</td></tr>
+      <tr><td class="k">後端</td><td>Supabase — Postgres + Auth + Row Level Security</td></tr>
+      <tr><td class="k">資料層</td><td>@tanstack/react-query（雲端資料）· zustand（單場烘焙的即時狀態）</td></tr>
+      <tr><td class="k">登入</td><td>Email／密碼，另支援 Google OAuth（走 Supabase Google provider）</td></tr>
+      <tr><td class="k">備份</td><td>登入時取得的 Google token 直接呼叫 Drive REST API，把每筆烘焙存成 JSON 備份到使用者自己的 Google Drive</td></tr>
+      <tr><td class="k">部署</td><td>Web 版靜態輸出，推上 main 由 GitHub Actions 自動部署到 GitHub Pages</td></tr>
+      <tr><td class="k">語言</td><td>介面文字全部 zh-TW，對應舊版 cafe4 與其使用者的語言</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> 目前進度</h2>
+    <div class="roadmap">
+      <div class="rm-item">
+        <span class="rm-status">完成</span>
+        <div class="rm-body">
+          <h4>階段一 — 烘焙記錄核心</h4>
+          <p>登入、生豆型錄、即時烘焙（模擬訊號）、溫度曲線、雲端同步。</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-status">完成</span>
+        <div class="rm-body">
+          <h4>階段二 — 進銷存</h4>
+          <p>供應商、生豆進貨批次、烘焙自動扣庫存、熟豆出入庫、拼配配方。</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-status">完成</span>
+        <div class="rm-body">
+          <h4>階段三 — 感測器抽象層</h4>
+          <p>模擬／Web Serial／BLE 三種實作、設定頁選擇與配對、雙曲線比較、CSV／PNG 匯出。</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-status">完成</span>
+        <div class="rm-body">
+          <h4>Google 登入 + Drive 備份</h4>
+          <p>Google 一鍵登入，烘焙儲存時自動備份 JSON 到使用者自己的 Google Drive。</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-status">下一步</span>
+        <div class="rm-body">
+          <h4>接上正式 Supabase 專案</h4>
+          <p>目前線上 POC 仍在展示模式（瀏覽器記憶體示範資料），正在接上真正的雲端資料庫。</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-status">未來</span>
+        <div class="rm-body">
+          <h4>藍牙 Dev Build</h4>
+          <p>Expo Go 無法載入原生藍牙模組，需要 <span class="mono">expo run:android</span> 或 EAS 打包出 dev client 才能真正連上實體探針。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>線上 POC：<a class="btn" href="/coffeeroast/" style="padding:2px 8px" target="_blank" rel="noopener">leoleehr.github.io/coffeeroast</a> — 未連接 Supabase 時自動使用示範資料，可直接瀏覽整個 UI。</p>
+  </footer>
+
+</div>
+</body>
+</html>
