@@ -1,7 +1,7 @@
 /** All user-facing strings. zh-TW only for now; swap this module to localise. */
 export const t = {
   appName: '畫素微量烘焙咖啡',
-  appNameEn: "Pixel Cafe' Nano-Rostery",
+  appNameEn: "Pixel Cafe' Nano-Roastery",
 
   common: {
     save: '儲存',
