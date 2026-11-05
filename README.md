@@ -1,4 +1,4 @@
-# 畫素微量烘焙咖啡 · Pixel Cafe' Nano-Rostery (coffeeroast)
+# 畫素微量烘焙咖啡 · Pixel Cafe' Nano-Roastery (coffeeroast)
 
 **線上 POC**：https://leoleehr.github.io/coffeeroast/（推到 `main` 會自動重新部署，見
 `.github/workflows/deploy-web.yml`）。未設定 Supabase 時會自動使用 `src/demo/` 的示範資料，方便直接
